@@ -1,0 +1,116 @@
+.container {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+}
+
+.svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.canvas {
+  position: relative;
+  width: var(--metaball-width);
+  height: var(--metaball-height);
+  filter: url(#metaball-filter);
+  will-change: filter;
+}
+
+.ball {
+  position: absolute;
+  width: var(--ball-size);
+  height: var(--ball-size);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 30% 30%,
+    var(--metaball-secondary-color),
+    var(--metaball-color)
+  );
+  transform-origin: center center;
+  will-change: transform;
+  pointer-events: none;
+
+  // Offset to center the ball on its position
+  margin-left: calc(var(--ball-size) / -2);
+  margin-top: calc(var(--ball-size) / -2);
+
+  // Add subtle animation for visual interest
+  animation: pulse 3s ease-in-out infinite;
+  animation-delay: calc(var(--ball-index, 0) * 0.2s);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.9;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.2);
+  }
+}
+
+// Variants for different color schemes
+.container[data-theme="purple"] {
+  .ball {
+    background: radial-gradient(
+      circle at 30% 30%,
+      #a855f7,
+      #6366f1
+    );
+  }
+}
+
+.container[data-theme="blue"] {
+  .ball {
+    background: radial-gradient(
+      circle at 30% 30%,
+      #3b82f6,
+      #06b6d4
+    );
+  }
+}
+
+.container[data-theme="green"] {
+  .ball {
+    background: radial-gradient(
+      circle at 30% 30%,
+      #10b981,
+      #14b8a6
+    );
+  }
+}
+
+.container[data-theme="pink"] {
+  .ball {
+    background: radial-gradient(
+      circle at 30% 30%,
+      #ec4899,
+      #f43f5e
+    );
+  }
+}
+
+.container[data-theme="orange"] {
+  .ball {
+    background: radial-gradient(
+      circle at 30% 30%,
+      #f97316,
+      #eab308
+    );
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .container {
+    border-radius: 8px;
+  }
+}

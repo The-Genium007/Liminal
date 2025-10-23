@@ -7,7 +7,7 @@ Thank you for considering contributing to Liminal!
 1. Fork the repository
 2. Clone your fork:
    ```bash
-   git clone https://github.com/The-Genium007/Liminal.git
+   git clone https://github.com/yourusername/liminal.git
    cd liminal
    ```
 3. Install dependencies:

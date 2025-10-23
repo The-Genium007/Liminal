@@ -65,7 +65,7 @@ jobs:
       - name: Merge development into main
         run: |
           git checkout main
-          git merge --no-ff development -m "chore: merge development into main [skip ci]"
+          git merge --no-ff development -m "chore: merge development into main"
           git push origin main
 
       - name: Create success comment

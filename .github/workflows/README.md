@@ -49,6 +49,18 @@ Triggered automatically when `package.json` version changes on `main`.
 - **create-github-release**: Create GitHub release with changelog
 - **deploy-storybook**: Deploy Storybook to GitHub Pages
 
+### Deploy Storybook (`deploy-storybook.yml`)
+
+Standalone workflow to deploy Storybook documentation to GitHub Pages.
+
+**Triggers:**
+- On every push to `main` branch
+- Manual trigger via GitHub Actions UI (workflow_dispatch)
+
+**What it does:**
+- Builds Storybook static site
+- Deploys to GitHub Pages at: `https://the-genium007.github.io/Liminal/`
+
 ### CodeQL (`codeql.yml`)
 
 Security analysis that runs:

@@ -5,12 +5,12 @@ This directory contains the CI/CD workflows for Liminal.
 ## Branch Strategy
 
 ```
-develop → CI validation → auto-merge to main → NPM release
+development → CI validation → auto-merge to main → NPM release
 ```
 
 ### Branch Flow
 
-1. **develop**: Development branch where you push changes
+1. **development**: Development branch where you push changes
 2. **main**: Production branch (auto-updated after CI passes)
 3. NPM publishes automatically when version in package.json changes on main
 
@@ -18,7 +18,7 @@ develop → CI validation → auto-merge to main → NPM release
 
 ### CI (`ci.yml`)
 
-Runs on every push to `develop` branch.
+Runs on every push to `development` branch.
 
 **Jobs:**
 - **lint-and-typecheck**: TypeScript type checking
@@ -30,11 +30,11 @@ Runs on every push to `develop` branch.
 
 ### Auto-Merge (`merge-to-main.yml`)
 
-Automatically merges `develop` to `main` after CI passes.
+Automatically merges `development` to `main` after CI passes.
 
 **Flow:**
 1. Wait for all CI jobs to complete
-2. If all tests pass, merge develop → main
+2. If all tests pass, merge development → main
 3. Adds comment confirming successful merge
 
 ### Release (`release.yml`)
@@ -106,8 +106,8 @@ Recommended branch protection rules for `main`:
 ### Daily Development
 
 ```bash
-# Work on develop branch
-git checkout develop
+# Work on development branch
+git checkout development
 
 # Make your changes
 # ...
@@ -115,19 +115,19 @@ git checkout develop
 # Commit and push
 git add .
 git commit -m "feat: your feature"
-git push origin develop
+git push origin development
 ```
 
 **What happens automatically:**
-1. CI runs all tests on develop
+1. CI runs all tests on development
 2. If tests pass → auto-merge to main
 3. If package.json version changed → publish to NPM
 
 ### Creating a Release
 
 ```bash
-# On develop branch
-git checkout develop
+# On development branch
+git checkout development
 
 # Update version (patch: 0.1.0 → 0.1.1)
 npm version patch  # or minor (0.1.0 → 0.2.0), major (0.1.0 → 1.0.0)
@@ -138,11 +138,11 @@ npm version patch  # or minor (0.1.0 → 0.2.0), major (0.1.0 → 1.0.0)
 # Commit and push
 git add .
 git commit -m "chore: release v0.1.1"
-git push origin develop
+git push origin development
 ```
 
 **What happens automatically:**
-1. CI validates on develop
+1. CI validates on development
 2. Merges to main
 3. Detects version change
 4. Creates git tag (v0.1.1)

@@ -1,5 +1,5 @@
 {
-  "name": "liminal",
+  "name": "liminal-ui-library",
   "version": "0.1.0",
   "description": "A modern React component library with beautiful animations and dynamic effects",
   "type": "module",
@@ -57,12 +57,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/liminal.git"
+    "url": "https://github.com/The-Genium007/liminal.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/liminal/issues"
+    "url": "https://github.com/The-Genium007/liminal/issues"
   },
-  "homepage": "https://github.com/yourusername/liminal#readme",
+  "homepage": "https://github.com/The-Genium007/liminal#readme",
   "dependencies": {
     "aiblueprint-cli": "^1.1.7",
     "ogl": "^1.0.11"

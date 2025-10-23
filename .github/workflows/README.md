@@ -72,7 +72,7 @@ Security analysis that runs:
 
 1. Go to repository Settings > Pages
 2. Source: GitHub Actions
-3. Storybook will be deployed at: `https://yourusername.github.io/liminal/`
+3. Storybook will be deployed at: `https://The-Genium007.github.io/Liminal/`
 
 ### 3. Branch Protection
 
@@ -143,8 +143,8 @@ git push origin develop
 Add these badges to your README.md:
 
 ```markdown
-[![CI](https://github.com/yourusername/liminal/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/liminal/actions/workflows/ci.yml)
-[![Release](https://github.com/yourusername/liminal/actions/workflows/release.yml/badge.svg)](https://github.com/yourusername/liminal/actions/workflows/release.yml)
+[![CI](https://github.com/The-Genium007/Liminal/actions/workflows/ci.yml/badge.svg)](https://github.com/The-Genium007/Liminal/actions/workflows/ci.yml)
+[![Release](https://github.com/The-Genium007/Liminal/actions/workflows/release.yml/badge.svg)](https://github.com/The-Genium007/Liminal/actions/workflows/release.yml)
 [![npm version](https://badge.fury.io/js/liminal.svg)](https://www.npmjs.com/package/liminal)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ```

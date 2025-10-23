@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { expect, within, waitFor } from '@storybook/test';
 import FusionBall from './FusionBall';
 import type { FusionBallProps } from './FusionBall';
 
@@ -300,6 +301,101 @@ export const Default: Story = {
     className: '',
     width: undefined,
     height: undefined,
+  },
+  play: async ({ canvasElement }) => {
+    // Wait for canvas element to be created
+    await waitFor(() => {
+      const canvasEl = canvasElement.querySelector('canvas');
+      expect(canvasEl).toBeInTheDocument();
+      expect(canvasEl).toBeInstanceOf(HTMLCanvasElement);
+    });
+
+    // Verify container has correct class
+    const container = canvasElement.querySelector('.fusionball-container');
+    expect(container).toBeInTheDocument();
+  },
+};
+
+/**
+ * With secondary color gradient
+ */
+export const WithSecondaryColor: Story = {
+  args: {
+    ...Default.args,
+    color: '#ff0000',
+    secondaryColor: '#0000ff',
+  },
+  play: async ({ canvasElement }) => {
+    await waitFor(() => {
+      const canvasEl = canvasElement.querySelector('canvas');
+      expect(canvasEl).toBeInTheDocument();
+    });
+  },
+};
+
+/**
+ * Pixelated effect
+ */
+export const Pixelated: Story = {
+  args: {
+    ...Default.args,
+    enablePixelation: true,
+    pixelSize: 8,
+  },
+  play: async ({ canvasElement }) => {
+    await waitFor(() => {
+      const canvasEl = canvasElement.querySelector('canvas');
+      expect(canvasEl).toBeInTheDocument();
+    });
+  },
+};
+
+/**
+ * Inverted colors
+ */
+export const InvertedColors: Story = {
+  args: {
+    ...Default.args,
+    invertColors: true,
+  },
+  play: async ({ canvasElement }) => {
+    await waitFor(() => {
+      const canvasEl = canvasElement.querySelector('canvas');
+      expect(canvasEl).toBeInTheDocument();
+    });
+  },
+};
+
+/**
+ * Custom ball count and size
+ */
+export const CustomBalls: Story = {
+  args: {
+    ...Default.args,
+    ballCount: 30,
+    ballSize: 2.5,
+  },
+  play: async ({ canvasElement }) => {
+    await waitFor(() => {
+      const canvasEl = canvasElement.querySelector('canvas');
+      expect(canvasEl).toBeInTheDocument();
+    });
+  },
+};
+
+/**
+ * Without mouse interaction
+ */
+export const NoMouseInteraction: Story = {
+  args: {
+    ...Default.args,
+    enableMouseInteraction: false,
+  },
+  play: async ({ canvasElement }) => {
+    await waitFor(() => {
+      const canvasEl = canvasElement.querySelector('canvas');
+      expect(canvasEl).toBeInTheDocument();
+    });
   },
 };
 

@@ -57,12 +57,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/The-genium007/liminal.git"
+    "url": "https://github.com/The-Genium007/liminal.git"
   },
   "bugs": {
-    "url": "https://github.com/The-genium007/liminal/issues"
+    "url": "https://github.com/The-Genium007/liminal/issues"
   },
-  "homepage": "https://github.com/The-genium007/liminal#readme",
+  "homepage": "https://github.com/The-Genium007/liminal#readme",
   "dependencies": {
     "aiblueprint-cli": "^1.1.7",
     "ogl": "^1.0.11"

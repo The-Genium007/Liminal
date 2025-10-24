@@ -1,6 +1,9 @@
 import type { Preview } from "@storybook/react";
 import liminalTheme from './LiminalTheme';
 
+// Apply theme globally via console log to verify it loads
+console.log('Liminal Theme loaded:', liminalTheme);
+
 const preview: Preview = {
   parameters: {
     actions: { argTypesRegex: "^on[A-Z].*" },

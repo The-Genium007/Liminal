@@ -3,6 +3,52 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+<script type="module">
+  // Apply Liminal theme when Storybook manager loads
+  import { addons } from 'storybook/manager-api';
+  import { create } from 'storybook/theming';
+
+  const liminalTheme = create({
+    base: 'light',
+    fontBase: '"Montserrat", sans-serif',
+    fontCode: '"Fira Code", "Consolas", "Monaco", monospace',
+    brandTitle: 'Liminal UI Library',
+    brandUrl: 'https://the-genium007.github.io/Liminal/',
+    brandImage: './assets/liminal-logo.png',
+    brandTarget: '_self',
+    colorPrimary: '#4F4652',
+    colorSecondary: '#8C969D',
+    appBg: '#E9E4DA',
+    appContentBg: '#E9E4DA',
+    appPreviewBg: '#E9E4DA',
+    appBorderColor: '#B7B6B2',
+    appBorderRadius: 0,
+    textColor: '#1a1a1a',
+    textInverseColor: '#E9E4DA',
+    textMutedColor: '#4F4652',
+    barTextColor: '#1a1a1a',
+    barHoverColor: '#E9E4DA',
+    barSelectedColor: '#E9E4DA',
+    barBg: '#E9E4DA',
+    buttonBg: '#8C969D',
+    buttonBorder: '#8C969D',
+    booleanBg: '#B7B6B2',
+    booleanSelectedBg: '#8C969D',
+    inputBg: '#ffffff',
+    inputBorder: '#B7B6B2',
+    inputTextColor: '#1a1a1a',
+    inputBorderRadius: 0,
+  });
+
+  addons.setConfig({
+    theme: liminalTheme,
+    sidebar: {
+      showRoots: false,
+      renderLabel: ({ name }) => name,
+    },
+  });
+</script>
+
 <script>
   // Update page title dynamically
   const updateTitle = () => {

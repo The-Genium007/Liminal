@@ -1,0 +1,288 @@
+<link rel="icon" type="image/png" href="/assets/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<script>
+  // Update page title dynamically
+  const updateTitle = () => {
+    const observer = new MutationObserver(() => {
+      const currentTitle = document.title;
+      if (!currentTitle.startsWith('Liminal UI Library')) {
+        // Extract the story/component name from the current title
+        const storyName = currentTitle.replace('⋅ Storybook', '').trim();
+        if (storyName && storyName !== 'Storybook') {
+          document.title = `Liminal UI Library - ${storyName}`;
+        } else {
+          document.title = 'Liminal UI Library';
+        }
+      }
+    });
+
+    observer.observe(document.querySelector('title') || document.head, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+
+    // Initial title update
+    if (document.title === 'Storybook' || !document.title.startsWith('Liminal UI Library')) {
+      document.title = 'Liminal UI Library';
+    }
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', updateTitle);
+  } else {
+    updateTitle();
+  }
+</script>
+
+<style>
+  /* Hard-edged interface customization for Liminal */
+
+  /* Apply brand colors */
+  :root {
+    --liminal-concrete: #B7B6B2;
+    --liminal-steel: #8C969D;
+    --liminal-graphite: #4F4652;
+    --liminal-ivoire: #E9E4DA;
+  }
+
+  /* Remove all border radius */
+  * {
+    border-radius: 0 !important;
+  }
+
+  /* Main background */
+  body {
+    background-color: var(--liminal-ivoire) !important;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--liminal-ivoire);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--liminal-concrete);
+    border: none;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--liminal-steel);
+  }
+
+  /* Sidebar customization */
+  [data-side="left"],
+  nav[class*="sidebar"] {
+    background: var(--liminal-ivoire) !important;
+    border-right: 2px solid var(--liminal-concrete) !important;
+  }
+
+  /* Sidebar text - dark and readable */
+  [data-side="left"] a,
+  [data-side="left"] span,
+  [data-side="left"] div,
+  nav[class*="sidebar"] a,
+  nav[class*="sidebar"] span,
+  nav[class*="sidebar"] div,
+  [data-nodetype] span,
+  [data-nodetype] a {
+    color: #1a1a1a !important;
+  }
+
+  /* Sidebar items text */
+  [class*="sidebar"] [class*="item"],
+  [class*="sidebar"] [class*="title"],
+  [class*="TreeNode"] {
+    color: #1a1a1a !important;
+  }
+
+  /* Button hover effects - sharp transitions */
+  button {
+    transition: all 0.1s linear !important;
+    border-radius: 0 !important;
+  }
+
+  button:hover {
+    background-color: var(--liminal-steel) !important;
+    color: #ffffff !important;
+  }
+
+  /* Active/selected states */
+  [data-selected="true"],
+  [aria-selected="true"] {
+    background-color: var(--liminal-graphite) !important;
+    color: var(--liminal-ivoire) !important;
+  }
+
+  /* Selected sidebar items - keep light text on dark background */
+  [data-selected="true"] span,
+  [data-selected="true"] a,
+  [data-selected="true"] div,
+  [aria-selected="true"] span,
+  [aria-selected="true"] a,
+  [aria-selected="true"] div,
+  [data-side="left"] [data-selected="true"] span,
+  [data-side="left"] [data-selected="true"] a,
+  [data-side="left"] [data-selected="true"] div,
+  [data-side="left"] [aria-selected="true"] span,
+  [data-side="left"] [aria-selected="true"] a,
+  [data-side="left"] [aria-selected="true"] div,
+  nav[class*="sidebar"] [data-selected="true"] span,
+  nav[class*="sidebar"] [data-selected="true"] a,
+  nav[class*="sidebar"] [aria-selected="true"] span,
+  nav[class*="sidebar"] [aria-selected="true"] a {
+    color: var(--liminal-ivoire) !important;
+  }
+
+  /* Input fields - hard edges */
+  input,
+  textarea,
+  select {
+    border-radius: 0 !important;
+    border: none !important;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Panels and containers */
+  [data-panel],
+  [class*="panel"] {
+    border-radius: 0 !important;
+    border-color: var(--liminal-concrete) !important;
+  }
+
+  /* Toolbar */
+  [role="toolbar"],
+  [class*="toolbar"] {
+    background: var(--liminal-ivoire) !important;
+    border-bottom: 2px solid var(--liminal-concrete) !important;
+  }
+
+  /* Tabs - hard edges */
+  [role="tab"] {
+    border-radius: 0 !important;
+  }
+
+  [role="tab"][aria-selected="true"] {
+    background-color: var(--liminal-graphite) !important;
+    color: var(--liminal-ivoire) !important;
+    border-bottom: 3px solid var(--liminal-steel) !important;
+  }
+
+  /* Code blocks */
+  pre,
+  code {
+    border-radius: 0 !important;
+    background-color: var(--liminal-graphite) !important;
+    color: var(--liminal-ivoire) !important;
+  }
+
+  /* Tooltips */
+  [role="tooltip"] {
+    border-radius: 0 !important;
+    background-color: var(--liminal-graphite) !important;
+    color: var(--liminal-ivoire) !important;
+    border: 1px solid var(--liminal-steel) !important;
+  }
+
+  /* Remove focus outlines and replace with hard borders */
+  *:focus-visible {
+    outline: none !important;
+    box-shadow: 0 0 0 2px var(--liminal-steel) !important;
+    border-radius: 0 !important;
+  }
+
+  /* Navigation items */
+  [data-nodetype="story"],
+  [data-nodetype="component"],
+  [data-nodetype="group"],
+  [data-nodetype="root"] {
+    border-radius: 0 !important;
+    margin: 2px 0 !important;
+  }
+
+  /* Logo container adjustments */
+  [class*="brand"] img,
+  img[alt*="logo"],
+  img[alt*="Logo"] {
+    max-height: 40px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  /* Add title next to logo */
+  [class*="brand"],
+  a[class*="brand"] {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 8px 12px !important;
+  }
+
+  /* Show brand title - right of logo */
+  [class*="brand"]::after {
+    content: 'Liminal' !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    color: #1a1a1a !important;
+    white-space: nowrap !important;
+    letter-spacing: 0.5px !important;
+  }
+
+  /* Header/top bar */
+  header,
+  [class*="header"] {
+    background-color: var(--liminal-ivoire) !important;
+    border-bottom: 2px solid var(--liminal-concrete) !important;
+  }
+
+  /* Ensure borders are sharp */
+  [class*="border"] {
+    border-radius: 0 !important;
+  }
+
+  /* Logo replacement - force custom logo */
+  [class*="sidebar"] img[alt*="Storybook"],
+  [class*="brand"] img[src*="storybook"],
+  img[alt="Storybook"] {
+    content: url('/assets/liminal-logo.jpg') !important;
+    max-height: 40px !important;
+    width: auto !important;
+  }
+
+  /* Change Docs background to ivoire */
+  [id="storybook-docs"],
+  [class*="docs"],
+  .sbdocs,
+  .sbdocs-wrapper,
+  .sbdocs-content {
+    background-color: var(--liminal-ivoire) !important;
+  }
+
+  /* Docs main container */
+  .sb-main-padded,
+  [class*="docblock"],
+  article {
+    background-color: var(--liminal-ivoire) !important;
+  }
+
+  /* Docs page background */
+  #storybook-preview-wrapper,
+  [data-panel-id="storybook/docs/panel"] {
+    background-color: var(--liminal-ivoire) !important;
+  }
+</style>

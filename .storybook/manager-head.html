@@ -224,11 +224,12 @@
     object-fit: contain;
   }
 
-  /* Add title next to logo */
+  /* Add title next to logo - centered */
   [class*="brand"],
   a[class*="brand"] {
     display: flex !important;
     align-items: center !important;
+    justify-content: center !important;
     gap: 8px !important;
     padding: 8px 12px !important;
   }
@@ -259,7 +260,7 @@
   [class*="sidebar"] img[alt*="Storybook"],
   [class*="brand"] img[src*="storybook"],
   img[alt="Storybook"] {
-    content: url('/assets/liminal-logo.jpg') !important;
+    content: url('/assets/liminal-logo.png') !important;
     max-height: 40px !important;
     width: auto !important;
   }

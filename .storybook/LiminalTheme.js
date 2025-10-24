@@ -10,7 +10,7 @@ export default create({
   // Brand
   brandTitle: 'Liminal UI Library',
   brandUrl: 'https://the-genium007.github.io/Liminal/',
-  brandImage: '/assets/liminal-logo.jpg',
+  brandImage: '/assets/liminal-logo.png',
   brandTarget: '_self',
 
   // Color palette - hard industrial aesthetic

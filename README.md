@@ -5,7 +5,7 @@ A modern React component library featuring WebGL-powered effects and animations 
 ## Installation
 
 ```bash
-npm install liminal
+npm i liminal-ui-library
 ```
 
 ## Usage

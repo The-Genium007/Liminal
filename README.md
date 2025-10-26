@@ -15,7 +15,7 @@
   <a href="https://www.npmjs.com/package/liminal-ui-library">
     <img src="https://img.shields.io/npm/dm/liminal-ui-library.svg" alt="npm downloads" />
   </a>
-  <a href="https://github.com/The-Genium007/liminal/blob/main/LICENSE">
+  <a href="https://github.com/The-Genium007/liminal-ui-library/blob/main/LICENSE.md">
     <img src="https://img.shields.io/npm/l/liminal-ui-library.svg" alt="license" />
   </a>
 </p>
@@ -172,7 +172,7 @@ I'm always looking to improve and learn! If you have:
 - **General feedback** on code quality or architecture
 
 Please feel free to:
-- Open an [issue on GitHub](https://github.com/The-Genium007/liminal/issues)
+- Open an [issue on GitHub](https://github.com/The-Genium007/liminal-ui-library/issues)
 - Submit a pull request
 - Reach out directly
 
@@ -189,7 +189,7 @@ I'm here to learn and grow as a developer, and any constructive feedback is high
 
 See [LICENSE.md](LICENSE.md) for full details.
 
-For commercial licensing inquiries, please [open an issue](https://github.com/The-Genium007/liminal/issues) on GitHub.
+For commercial licensing inquiries, please [open an issue](https://github.com/The-Genium007/liminal-ui-library/issues) on GitHub.
 
 © [The-Genium007](https://github.com/The-Genium007)
 

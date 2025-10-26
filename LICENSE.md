@@ -62,7 +62,7 @@ Commercial use includes, but is not limited to:
 
 For commercial licensing inquiries, please contact:
 
-- **GitHub**: Open an issue at [https://github.com/The-Genium007/liminal/issues](https://github.com/The-Genium007/liminal/issues)
+- **GitHub**: Open an issue at [https://github.com/The-Genium007/liminal-ui-library/issues](https://github.com/The-Genium007/liminal-ui-library/issues)
 - **Email**: Create an issue on GitHub with your contact information
 
 A commercial license grants you:

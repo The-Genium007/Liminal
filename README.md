@@ -1,12 +1,10 @@
-<p align="center">
+<div align="center">
   <img src=".storybook/assets/liminal-logo.png" alt="Liminal UI Library" width="200"/>
-</p>
 
-<h1 align="center">Liminal UI Library</h1>
+  # Liminal UI Library
 
-<p align="center">
-  <strong>A modern React component library featuring WebGL-powered effects and animations.</strong>
-</p>
+  **A modern React component library featuring WebGL-powered effects and animations.**
+</div>
 
 <p align="center">
   <a href="https://www.npmjs.com/package/liminal-ui-library">

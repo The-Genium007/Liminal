@@ -182,7 +182,16 @@ I'm here to learn and grow as a developer, and any constructive feedback is high
 
 ## License
 
-MIT © [The-Genium007](https://github.com/The-Genium007)
+**Dual License** - Choose the license that fits your use case:
+
+- **Non-Commercial**: Free for personal, educational, and open-source projects
+- **Commercial**: Required for commercial use (SaaS, products, services generating revenue)
+
+See [LICENSE.md](LICENSE.md) for full details.
+
+For commercial licensing inquiries, please [open an issue](https://github.com/The-Genium007/liminal/issues) on GitHub.
+
+© [The-Genium007](https://github.com/The-Genium007)
 
 ---
 

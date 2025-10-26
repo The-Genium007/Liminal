@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2025-10-26
+
+### Fixed
+- FusionBall: Fixed `invertColors` effect not working properly - now uses CSS `mix-blend-mode: difference` for proper color inversion against backgrounds
+- FusionBall: Removed unused shader uniform for better performance
+
+### Changed
+- FusionBall: Improved color inversion implementation to work correctly with background images and colored backgrounds
+
 ## [0.1.0] - 2025-10-23
 
 ### Added
@@ -32,5 +41,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Full TypeScript support
 - SCSS styling
 
-[Unreleased]: https://github.com/yourusername/liminal/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/yourusername/liminal/releases/tag/v0.1.0
+[Unreleased]: https://github.com/The-Genium007/liminal/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/The-Genium007/liminal/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/The-Genium007/liminal/releases/tag/v0.1.0

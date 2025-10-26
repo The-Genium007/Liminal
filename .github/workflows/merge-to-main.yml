@@ -78,3 +78,82 @@ jobs:
               commit_sha: context.sha,
               body: '✅ Successfully merged to main branch after CI validation'
             })
+
+  publish-npm:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    needs: auto-merge
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      # Checkout main branch (après le merge)
+      - name: 📥 Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: 🟢 Setup Node.js 22 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🧪 Run tests (if present)
+        run: npm test --if-present
+        continue-on-error: false
+
+      - name: 🔨 Build library
+        run: npm run build
+
+      # Guard de version - Skip si déjà publié
+      - name: 🔍 Check if version already published on npm
+        id: check_version
+        run: |
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+
+          echo "📦 Package: $PACKAGE_NAME"
+          echo "🔖 Version: $PACKAGE_VERSION"
+
+          if npm view "$PACKAGE_NAME@$PACKAGE_VERSION" version &>/dev/null; then
+            echo "⏩ Version $PACKAGE_VERSION already published on npm"
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+          else
+            echo "✨ Version $PACKAGE_VERSION not found on npm - will publish"
+            echo "should_publish=true" >> $GITHUB_OUTPUT
+          fi
+
+          echo "package_name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
+          echo "package_version=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
+
+      - name: ⚠️  Verify repository field in package.json
+        if: steps.check_version.outputs.should_publish == 'true'
+        run: |
+          REPO_URL=$(node -p "require('./package.json').repository?.url || ''" 2>/dev/null)
+          if [ -z "$REPO_URL" ]; then
+            echo "⚠️  WARNING: package.json.repository.url is missing!"
+          else
+            echo "✅ Repository URL found: $REPO_URL"
+          fi
+
+      # Publication npm avec provenance
+      - name: 🚀 Publish to npm with provenance
+        if: steps.check_version.outputs.should_publish == 'true'
+        run: |
+          echo "📤 Publishing ${{ steps.check_version.outputs.package_name }}@${{ steps.check_version.outputs.package_version }}"
+          npm publish --provenance --access public
+          echo "✅ Publication npm réussie avec provenance"
+          echo "📦 Package disponible: https://www.npmjs.com/package/${{ steps.check_version.outputs.package_name }}/v/${{ steps.check_version.outputs.package_version }}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: ⏩ Skip publication (version already published)
+        if: steps.check_version.outputs.should_publish == 'false'
+        run: |
+          echo "⏩ Version déjà publiée, publication ignorée."
+          echo "📦 Package: ${{ steps.check_version.outputs.package_name }}@${{ steps.check_version.outputs.package_version }}"

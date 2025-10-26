@@ -1,6 +1,6 @@
 {
   "name": "liminal-ui-library",
-  "version": "0.1.2",
+  "version": "0.1.0",
   "description": "A modern React component library with beautiful animations and dynamic effects",
   "type": "module",
   "main": "./dist/liminal.umd.cjs",

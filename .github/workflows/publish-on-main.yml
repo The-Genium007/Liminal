@@ -12,10 +12,12 @@
 # - package.json.repository doit pointer vers le bon repo GitHub
 #
 # Le workflow:
-# 1. Vérifie si la version existe déjà sur npm (skip si déjà publiée)
-# 2. Execute les tests si présents
-# 3. Build le projet
-# 4. Publie avec OIDC (Trusted Publishing) - provenance automatique
+# 1. Récupère la version locale et la dernière version npm
+# 2. Si version locale = dernière version npm → Publie (permet de republier)
+# 3. Si version locale ≠ dernière version npm → Skip avec warning
+# 4. Execute les tests si présents
+# 5. Build le projet
+# 6. Publie avec OIDC (Trusted Publishing) - provenance automatique
 # ============================================================================
 
 name: Publish to npm on push to main
@@ -65,29 +67,39 @@ jobs:
         run: npm run build --if-present
 
       # ========================================================================
-      # Version Guard - Skip if already published
+      # Version Check - Publish only if local version matches npm latest
       # ========================================================================
 
-      - name: 🔍 Check if version already published on npm
+      - name: 🔍 Compare local version with npm registry
         id: check_version
         run: |
           PACKAGE_NAME=$(node -p "require('./package.json').name")
-          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          LOCAL_VERSION=$(node -p "require('./package.json').version")
 
           echo "📦 Package: $PACKAGE_NAME"
-          echo "🔖 Version: $PACKAGE_VERSION"
+          echo "📍 Local version: $LOCAL_VERSION"
 
-          # Vérifier si cette version existe déjà sur npm
-          if npm view "$PACKAGE_NAME@$PACKAGE_VERSION" version &>/dev/null; then
-            echo "⏩ Version $PACKAGE_VERSION already published on npm"
-            echo "should_publish=false" >> $GITHUB_OUTPUT
-          else
-            echo "✨ Version $PACKAGE_VERSION not found on npm - will publish"
+          # Récupérer la dernière version sur npm (ou "none" si package n'existe pas)
+          NPM_VERSION=$(npm view "$PACKAGE_NAME" version 2>/dev/null || echo "none")
+          echo "📦 npm latest version: $NPM_VERSION"
+
+          # Logique inversée : publier SI les versions correspondent
+          if [ "$LOCAL_VERSION" = "$NPM_VERSION" ]; then
+            echo "✅ Local version matches npm version - will publish"
             echo "should_publish=true" >> $GITHUB_OUTPUT
+          elif [ "$NPM_VERSION" = "none" ]; then
+            echo "✨ Package not found on npm - first publication"
+            echo "should_publish=true" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️  WARNING: Version mismatch!"
+            echo "⚠️  Local: $LOCAL_VERSION | npm: $NPM_VERSION"
+            echo "⚠️  Publication skipped - please update package.json version to match npm"
+            echo "should_publish=false" >> $GITHUB_OUTPUT
           fi
 
           echo "package_name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
-          echo "package_version=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
+          echo "package_version=$LOCAL_VERSION" >> $GITHUB_OUTPUT
+          echo "npm_version=$NPM_VERSION" >> $GITHUB_OUTPUT
 
       # ========================================================================
       # Validation package.json
@@ -123,9 +135,17 @@ jobs:
           echo "✅ Publication npm réussie avec Trusted Publishing"
           echo "📦 Package disponible: https://www.npmjs.com/package/${{ steps.check_version.outputs.package_name }}/v/${{ steps.check_version.outputs.package_version }}"
 
-      - name: ⏩ Skip publication (version already published)
+      - name: ⚠️ Skip publication (version mismatch)
         if: steps.check_version.outputs.should_publish == 'false'
         run: |
-          echo "⏩ Version déjà publiée, publication ignorée."
-          echo "📦 Package: ${{ steps.check_version.outputs.package_name }}@${{ steps.check_version.outputs.package_version }}"
-          echo "🔗 https://www.npmjs.com/package/${{ steps.check_version.outputs.package_name }}/v/${{ steps.check_version.outputs.package_version }}"
+          echo "::warning::Version mismatch detected!"
+          echo "::warning::Local version: ${{ steps.check_version.outputs.package_version }}"
+          echo "::warning::npm version: ${{ steps.check_version.outputs.npm_version }}"
+          echo "::warning::Publication skipped - please update package.json to match npm version"
+          echo ""
+          echo "⚠️  PUBLICATION SKIPPED"
+          echo "📍 Local version: ${{ steps.check_version.outputs.package_version }}"
+          echo "📦 npm latest: ${{ steps.check_version.outputs.npm_version }}"
+          echo ""
+          echo "🔧 To fix: Update package.json version to match npm registry"
+          exit 1

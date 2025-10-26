@@ -1,0 +1,129 @@
+# ============================================================================
+# Workflow: Publish to npm on push to main
+# ============================================================================
+# Ce workflow publie automatiquement le package sur npm quand du code est
+# mergé dans la branche main.
+#
+# Prérequis:
+# - Secret NPM_TOKEN configuré dans GitHub (Automation token avec droit publish)
+# - package.json.version doit être incrémentée manuellement avant le merge
+# - package.json.repository doit pointer vers le bon repo GitHub (requis pour --provenance)
+#
+# Le workflow:
+# 1. Vérifie si la version existe déjà sur npm (skip si déjà publiée)
+# 2. Execute les tests si présents
+# 3. Build le projet
+# 4. Publie avec provenance sur npm
+# ============================================================================
+
+name: Publish to npm on push to main
+
+on:
+  push:
+    branches:
+      - main
+    # Ne pas filtrer sur paths - on veut publier même sans changement de package.json
+
+permissions:
+  contents: read  # Lecture seule du repo
+  id-token: write # Requis pour npm provenance
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+
+    steps:
+      # ========================================================================
+      # Checkout & Setup
+      # ========================================================================
+
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js 22 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      # ========================================================================
+      # Installation & Tests
+      # ========================================================================
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🧪 Run tests (if present)
+        run: npm test --if-present
+        continue-on-error: false
+
+      - name: 🔨 Build library (if present)
+        run: npm run build --if-present
+
+      # ========================================================================
+      # Version Guard - Skip if already published
+      # ========================================================================
+
+      - name: 🔍 Check if version already published on npm
+        id: check_version
+        run: |
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+
+          echo "📦 Package: $PACKAGE_NAME"
+          echo "🔖 Version: $PACKAGE_VERSION"
+
+          # Vérifier si cette version existe déjà sur npm
+          if npm view "$PACKAGE_NAME@$PACKAGE_VERSION" version &>/dev/null; then
+            echo "⏩ Version $PACKAGE_VERSION already published on npm"
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+          else
+            echo "✨ Version $PACKAGE_VERSION not found on npm - will publish"
+            echo "should_publish=true" >> $GITHUB_OUTPUT
+          fi
+
+          echo "package_name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
+          echo "package_version=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
+
+      # ========================================================================
+      # Validation package.json
+      # ========================================================================
+
+      - name: ⚠️  Verify repository field in package.json
+        if: steps.check_version.outputs.should_publish == 'true'
+        run: |
+          REPO_URL=$(node -p "require('./package.json').repository?.url || ''" 2>/dev/null)
+
+          if [ -z "$REPO_URL" ]; then
+            echo "⚠️  WARNING: package.json.repository.url is missing!"
+            echo "⚠️  This is required for npm provenance (--provenance flag)"
+            echo "⚠️  Publication will continue but provenance may fail"
+          else
+            echo "✅ Repository URL found: $REPO_URL"
+          fi
+
+      # ========================================================================
+      # Publication npm avec provenance
+      # ========================================================================
+
+      - name: 🚀 Publish to npm with provenance
+        if: steps.check_version.outputs.should_publish == 'true'
+        run: |
+          echo "📤 Publishing ${{ steps.check_version.outputs.package_name }}@${{ steps.check_version.outputs.package_version }}"
+
+          # Note: Retirer --access public si le package n'est pas scopé ou n'est pas public
+          npm publish --provenance --access public
+
+          echo "✅ Publication npm réussie avec provenance"
+          echo "📦 Package disponible: https://www.npmjs.com/package/${{ steps.check_version.outputs.package_name }}/v/${{ steps.check_version.outputs.package_version }}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: ⏩ Skip publication (version already published)
+        if: steps.check_version.outputs.should_publish == 'false'
+        run: |
+          echo "⏩ Version déjà publiée, publication ignorée."
+          echo "📦 Package: ${{ steps.check_version.outputs.package_name }}@${{ steps.check_version.outputs.package_version }}"
+          echo "🔗 https://www.npmjs.com/package/${{ steps.check_version.outputs.package_name }}/v/${{ steps.check_version.outputs.package_version }}"

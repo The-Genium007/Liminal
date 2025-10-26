@@ -1,0 +1,67 @@
+// ============================================================================
+// FusionBall Container Styles
+// ============================================================================
+
+.fusionballContainer {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+// Legacy class name support (from FusionBall.css)
+:global(.fusionball-container) {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+// ============================================================================
+// Error Message Styles
+// ============================================================================
+
+.errorMessage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 1.5rem 2rem;
+  background: rgba(255, 0, 0, 0.1);
+  border: 2px solid rgba(255, 0, 0, 0.3);
+  border-radius: 8px;
+  color: #ff6b6b;
+  text-align: center;
+  font-family: system-ui, -apple-system, sans-serif;
+  max-width: 90%;
+  z-index: 10;
+
+  p {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+}
+
+// ============================================================================
+// Responsive Design
+// ============================================================================
+
+@media (max-width: 768px) {
+  .errorMessage {
+    padding: 1rem 1.5rem;
+    font-size: 0.8125rem;
+  }
+}

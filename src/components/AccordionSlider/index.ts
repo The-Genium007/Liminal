@@ -1,5 +1,2 @@
 export { AccordionSlider } from './AccordionSlider';
 export type { AccordionSliderProps, SlideItem } from './AccordionSlider';
-
-export { FusionBall } from './FusionBall';
-export type { FusionBallProps } from './FusionBall';

@@ -1,0 +1,430 @@
+// ============================================================================
+// Variables
+// ============================================================================
+
+$gap: 1.25rem;
+$closed: 5rem;
+$open: 30rem;
+$accent: #ff6b35;
+
+$bg-dark: #07090d;
+$text-light: #c5c7ce;
+$text-white: #fff;
+
+// ============================================================================
+// Animation System - Premium easing functions for smooth, professional animations
+// ============================================================================
+
+$ease-smooth: cubic-bezier(0.4, 0, 0.2, 1); // Material Design standard easing
+$ease-entrance: cubic-bezier(0, 0, 0.2, 1); // Accelerate (entrance)
+$ease-exit: cubic-bezier(0.4, 0, 1, 1); // Decelerate (exit)
+$ease-elegant: cubic-bezier(0.25, 0.46, 0.45, 0.94); // Smooth elegant curve
+
+// Timing variables
+$duration-fast: 0.3s;
+$duration-base: 0.6s;
+$duration-slow: 1.1s;
+$duration-xslow: 1.8s;
+$duration-title: 2.4s;
+
+// ============================================================================
+// Container
+// ============================================================================
+
+.container {
+  font-family: Inter, sans-serif;
+  color: $text-light;
+
+  // CSS variables for dynamic animation speed control
+  --animation-speed: 1;
+  --duration-fast: calc(#{$duration-fast} / var(--animation-speed));
+  --duration-base: calc(#{$duration-base} / var(--animation-speed));
+  --duration-slow: calc(#{$duration-slow} / var(--animation-speed));
+  --duration-xslow: calc(#{$duration-xslow} / var(--animation-speed));
+  --duration-title: calc(#{$duration-title} / var(--animation-speed));
+
+  // Focus styles for accessibility
+  &:focus {
+    outline: 2px solid $accent;
+    outline-offset: 4px;
+  }
+
+  &:focus:not(:focus-visible) {
+    outline: none;
+  }
+}
+
+// ============================================================================
+// Accessibility - Screen reader only class
+// ============================================================================
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+// ============================================================================
+// Slider container
+// ============================================================================
+
+.slider {
+  max-width: 1400px;
+  margin: auto;
+  overflow: hidden;
+}
+
+.track {
+  display: flex;
+  gap: $gap;
+  align-items: flex-start;
+  justify-content: center;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 40px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  // For Firefox
+  scrollbar-width: none;
+}
+
+// ============================================================================
+// Project card
+// ============================================================================
+
+.projectCard {
+  position: relative;
+  flex: 0 0 $closed;
+  height: 26rem;
+  border-radius: var(--border-radius, 0);
+  overflow: hidden;
+  cursor: pointer;
+  transition: flex-basis var(--duration-slow) $ease-elegant,
+    transform var(--duration-slow) $ease-elegant, box-shadow var(--duration-base) $ease-smooth,
+    filter var(--duration-base) $ease-smooth;
+
+  // Focus styles for accessibility
+  &:focus {
+    outline: 3px solid $accent;
+    outline-offset: 2px;
+    z-index: 10;
+  }
+
+  &:focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  // Active state
+  &[data-active] {
+    flex-basis: $open;
+    height: 26rem;
+    box-shadow: 0 18px 55px rgba(0, 0, 0, 0.45);
+  }
+
+  // Grayscale filter
+  &[data-grayscale] {
+    filter: grayscale(100%);
+  }
+}
+
+// ============================================================================
+// Card Background Image
+// ============================================================================
+
+.projectCardBg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.8);
+  transition: filter var(--duration-base) $ease-smooth, transform var(--duration-slow) $ease-elegant;
+  will-change: transform; // GPU optimization hint
+
+  .projectCard:hover & {
+    filter: brightness(1);
+    transform: scale(1.05);
+  }
+
+  .projectCard[data-active] & {
+    will-change: auto; // Free GPU memory when not needed
+  }
+}
+
+// ============================================================================
+// Image Placeholders (for error handling)
+// ============================================================================
+
+.imagePlaceholder,
+.thumbnailPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.875rem;
+
+  &::after {
+    content: 'Image unavailable';
+  }
+}
+
+.imagePlaceholder {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.thumbnailPlaceholder {
+  width: 133px;
+  height: 269px;
+  border-radius: var(--border-radius, 0);
+
+  .projectCard[data-active] & {
+    display: flex;
+  }
+}
+
+// ============================================================================
+// Card Content
+// ============================================================================
+
+.projectCardContent {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0;
+  background: linear-gradient(transparent 40%, rgba(0, 0, 0, 0.85) 100%);
+  z-index: 2;
+
+  .projectCard[data-active] & {
+    flex-direction: row;
+    align-items: center;
+    padding: 1.2rem 2rem;
+    gap: 1.1rem;
+  }
+}
+
+// ============================================================================
+// Card Title
+// ============================================================================
+
+.projectCardTitle {
+  color: $text-white;
+  font-weight: 700;
+  font-size: 1.35rem;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  transition: font-size var(--duration-title) $ease-smooth;
+
+  .projectCard[data-active] & {
+    writing-mode: horizontal-tb;
+    font-size: 2.4rem;
+    transform: rotate(0deg);
+  }
+}
+
+// ============================================================================
+// Card Thumbnail, Description, Icon - Hidden by default
+// ============================================================================
+
+.projectCardThumb,
+.projectCardDesc,
+.projectCardIcon {
+  display: none;
+
+  .projectCard[data-active] & {
+    display: block;
+  }
+}
+
+.projectCardThumb {
+  width: 133px;
+  height: 269px;
+  border-radius: var(--border-radius, 0);
+  object-fit: cover;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.projectCardDesc {
+  color: #ddd;
+  font-size: 1rem;
+  line-height: 1.4;
+  max-width: 16rem;
+}
+
+.projectCardIcon {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 1.125rem;
+  height: 1.125rem;
+  color: $text-white;
+  opacity: 0;
+  transition: opacity var(--duration-xslow) $ease-entrance calc(0.4s / var(--animation-speed)),
+    transform var(--duration-fast) $ease-smooth;
+
+  .projectCard[data-active] & {
+    opacity: 0.7;
+  }
+
+  .projectCard[data-active]:hover & {
+    opacity: 1;
+    transform: translate(2px, -2px);
+  }
+}
+
+// ============================================================================
+// Mobile & Tablet Responsive Design
+// ============================================================================
+
+@media (max-width: 767px) {
+  .track {
+    flex-direction: column;
+    scroll-snap-type: y mandatory;
+    gap: 0.8rem;
+    padding-bottom: 20px;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .projectCard {
+    height: auto;
+    min-height: 80px;
+    flex: 0 0 auto;
+    width: 100%;
+    scroll-snap-align: start;
+
+    &[data-active] {
+      height: auto;
+      min-height: 80px;
+      transform: none;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  .projectCardContent {
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 1rem;
+    align-items: center;
+    gap: 1rem;
+
+    .projectCard[data-active] & {
+      align-items: flex-start;
+      padding: 1.5rem;
+    }
+  }
+
+  .projectCardTitle {
+    writing-mode: horizontal-tb;
+    font-size: 1.2rem;
+    margin-right: auto;
+    transition: font-size var(--duration-title) $ease-smooth, margin var(--duration-slow) $ease-smooth;
+    transform: none;
+    text-align: center;
+    padding-inline: 0.3rem;
+
+    .projectCard[data-active] & {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      margin-top: 2rem;
+    }
+  }
+
+  .projectCardThumb,
+  .projectCardDesc,
+  .projectCardIcon {
+    display: none;
+  }
+
+  .projectCardThumb {
+    .projectCard[data-active] & {
+      display: block;
+      width: 200px;
+      height: 267px;
+      border-radius: var(--border-radius, 0);
+      margin-bottom: 1rem;
+    }
+  }
+
+  .thumbnailPlaceholder {
+    .projectCard[data-active] & {
+      width: 200px;
+      height: 267px;
+      margin-bottom: 1rem;
+    }
+  }
+
+  .projectCardDesc {
+    .projectCard[data-active] & {
+      display: block;
+      font-size: 0.95rem;
+      max-width: 100%;
+      margin-bottom: 1rem;
+    }
+  }
+
+  .projectCardIcon {
+    .projectCard[data-active] & {
+      display: block;
+      bottom: 1rem;
+      right: 1rem;
+      width: 0.9375rem;
+      height: 0.9375rem;
+    }
+  }
+
+  .slider {
+    padding: 0 15px;
+  }
+}
+
+// ============================================================================
+// Performance Optimizations
+// ============================================================================
+
+// Reduce motion for users who prefer it (accessibility)
+@media (prefers-reduced-motion: reduce) {
+  .container {
+    --duration-fast: 0.01s;
+    --duration-base: 0.01s;
+    --duration-slow: 0.01s;
+    --duration-xslow: 0.01s;
+    --duration-title: 0.01s;
+  }
+
+  .projectCard,
+  .projectCardBg,
+  .projectCardTitle,
+  .projectCardIcon {
+    transition: none;
+  }
+
+  .track {
+    scroll-behavior: auto;
+  }
+}

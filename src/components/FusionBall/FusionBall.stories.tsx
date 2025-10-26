@@ -40,14 +40,14 @@ const FusionBallWithOpacity = (props: FusionBallProps & {
 };
 
 const meta = {
-  title: 'FusionBall',
+  title: 'Components/FusionBall',
   component: FusionBallWithOpacity,
   parameters: {
     layout: 'fullscreen',
     docs: {
       description: {
         component:
-          'An animated fusion ball effect using WebGL. Balls move around and create a liquid fusion effect when they get close to each other. Features mouse interaction.',
+          'A high-performance WebGL-powered animated fusion ball effect. Features smooth liquid-like fusion when balls get close, mouse/pointer interaction, procedural animation, and extensive customization options. Includes WebGL context loss recovery and graceful fallback for unsupported devices.',
       },
       page: null,
     },
@@ -58,18 +58,23 @@ const meta = {
   },
   tags: ['autodocs'],
   decorators: [
-    (Story) => (
-      <div style={{
-        width: '100%',
-        height: '600px',
-        background: '#000',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        <Story />
-      </div>
-    ),
+    (Story, context) => {
+      const invertColors = context.args.invertColors;
+      return (
+        <div style={{
+          width: '100%',
+          height: '600px',
+          background: invertColors
+            ? 'url(https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=1200&q=80) center/cover'
+            : '#000',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <Story />
+        </div>
+      );
+    },
   ],
   argTypes: {
     // Colors
@@ -133,7 +138,7 @@ const meta = {
     // Visual Effects
     invertColors: {
       control: 'boolean',
-      description: 'Invert colors (negative effect)',
+      description: 'Invert colors (on/off)',
       table: {
         type: { summary: 'boolean' },
         defaultValue: { summary: 'false' },
@@ -310,8 +315,8 @@ export const Default: Story = {
       expect(canvasEl).toBeInstanceOf(HTMLCanvasElement);
     });
 
-    // Verify container has correct class
-    const container = canvasElement.querySelector('.fusionball-container');
+    // Verify container has correct class (CSS modules use camelCase)
+    const container = canvasElement.querySelector('[class*="fusionballContainer"]');
     expect(container).toBeInTheDocument();
   },
 };
@@ -356,6 +361,8 @@ export const Pixelated: Story = {
 export const InvertedColors: Story = {
   args: {
     ...Default.args,
+    color: '#ffffff',
+    colorOpacity: 1.0,
     invertColors: true,
   },
   play: async ({ canvasElement }) => {
@@ -390,6 +397,87 @@ export const NoMouseInteraction: Story = {
   args: {
     ...Default.args,
     enableMouseInteraction: false,
+  },
+  play: async ({ canvasElement }) => {
+    await waitFor(() => {
+      const canvasEl = canvasElement.querySelector('canvas');
+      expect(canvasEl).toBeInTheDocument();
+    });
+  },
+};
+
+/**
+ * Performance showcase - many balls with fast animation
+ */
+export const PerformanceTest: Story = {
+  args: {
+    ...Default.args,
+    ballCount: 40,
+    ballSize: 2,
+    speed: 1.5,
+    color: '#00ffff',
+    secondaryColor: '#ff00ff',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Stress test with 40 balls, larger size, and faster animation. Tests WebGL performance optimization.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    await waitFor(() => {
+      const canvasEl = canvasElement.querySelector('canvas');
+      expect(canvasEl).toBeInTheDocument();
+    });
+  },
+};
+
+/**
+ * RGB color showcase
+ */
+export const RGBShowcase: Story = {
+  args: {
+    ...Default.args,
+    color: '#ff0000',
+    secondaryColor: '#00ff00',
+    cursorBallColor: '#0000ff',
+    ballCount: 20,
+    ballSize: 2,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Primary (red), secondary (green), and cursor (blue) colors working together.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    await waitFor(() => {
+      const canvasEl = canvasElement.querySelector('canvas');
+      expect(canvasEl).toBeInTheDocument();
+    });
+  },
+};
+
+/**
+ * Minimal setup - few balls, slow animation
+ */
+export const Minimal: Story = {
+  args: {
+    ...Default.args,
+    ballCount: 5,
+    ballSize: 1,
+    speed: 0.1,
+    clumpFactor: 0.5,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Minimal configuration with few balls and slow, meditative animation.',
+      },
+    },
   },
   play: async ({ canvasElement }) => {
     await waitFor(() => {

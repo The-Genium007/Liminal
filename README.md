@@ -1,22 +1,70 @@
-# Liminal
+<p align="center">
+  <img src=".storybook/assets/liminal-logo.png" alt="Liminal UI Library" width="200"/>
+</p>
 
-A modern React component library featuring WebGL-powered effects and animations built with TypeScript.
+<h1 align="center">Liminal UI Library</h1>
+
+<p align="center">
+  <strong>A modern React component library featuring WebGL-powered effects and animations.</strong>
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/liminal-ui-library">
+    <img src="https://img.shields.io/npm/v/liminal-ui-library.svg" alt="npm version" />
+  </a>
+  <a href="https://www.npmjs.com/package/liminal-ui-library">
+    <img src="https://img.shields.io/npm/dm/liminal-ui-library.svg" alt="npm downloads" />
+  </a>
+  <a href="https://github.com/The-Genium007/liminal/blob/main/LICENSE">
+    <img src="https://img.shields.io/npm/l/liminal-ui-library.svg" alt="license" />
+  </a>
+</p>
+
+---
+
+## About
+
+**Liminal** is a curated collection of React components I've built over time. This library serves as a central repository for all the custom components I create, from simple UI elements to complex WebGL-powered animations.
+
+While this project is continuously evolving and may not be perfect, it represents my journey in learning and mastering modern web development. Each component is crafted with care, and I'm committed to improving the library over time based on real-world usage and feedback.
+
+### Why Liminal?
+
+- **Personal Learning Lab**: A space where I experiment, learn, and refine my React and TypeScript skills
+- **Production-Ready Components**: Despite being a learning project, all components are built with production use in mind
+- **Open to Feedback**: I'm eager to learn from the community—whether it's about security, performance optimization, or best practices
+
+> **Note**: This is an ongoing project, and I'm always looking to improve. If you have suggestions, find bugs, or have ideas for optimization, please don't hesitate to reach out!
+
+---
 
 ## Installation
 
+Install the library via npm:
+
 ```bash
-npm i liminal-ui-library
+npm install liminal-ui-library
 ```
 
-## Usage
+Or using yarn:
+
+```bash
+yarn add liminal-ui-library
+```
+
+**NPM Package**: [liminal-ui-library](https://www.npmjs.com/package/liminal-ui-library)
+
+---
+
+## Quick Start
 
 ```tsx
-import { FusionBall } from 'liminal';
-import 'liminal/styles';
+import { FusionBall } from 'liminal-ui-library';
+import 'liminal-ui-library/styles';
 
 function App() {
   return (
-    <div style={{ width: '100%', height: '600px' }}>
+    <div style={{ width: '100%', height: '600px', background: '#000' }}>
       <FusionBall
         color="#ffffff"
         speed={0.3}
@@ -28,104 +76,125 @@ function App() {
 }
 ```
 
+---
+
 ## Components
 
 ### FusionBall
 
-WebGL-powered metaball animation with mouse interaction and customizable effects.
+A stunning WebGL-powered metaball animation with smooth mouse interaction and highly customizable visual effects.
 
 ```tsx
 <FusionBall
   color="#ffffff"
-  secondaryColor="#ff0000"
-  cursorBallColor="#00ff00"
   speed={0.3}
   ballCount={15}
-  ballSize={1.5}
-  cursorBallSize={3}
   enableMouseInteraction={true}
-  invertColors={false}
-  enablePixelation={false}
-  pixelSize={6}
 />
 ```
 
-#### Props
+### AccordionSlider
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `color` | `string` | `#ffffff` | Primary color (hex, rgba) |
-| `secondaryColor` | `string` | `''` | Secondary color for gradient effect |
-| `cursorBallColor` | `string` | `''` | Cursor ball color |
-| `speed` | `number` | `0.3` | Animation speed |
-| `ballCount` | `number` | `15` | Number of balls (5-50) |
-| `ballSize` | `number` | `1.5` | Ball size multiplier |
-| `clumpFactor` | `number` | `1` | Ball clustering factor |
-| `cursorBallSize` | `number` | `3` | Cursor ball size |
-| `enableMouseInteraction` | `boolean` | `true` | Enable mouse interaction |
-| `hoverSmoothness` | `number` | `0.05` | Cursor smoothness |
-| `animationSize` | `number` | `30` | Animation scale |
-| `invertColors` | `boolean` | `false` | Invert colors (negative effect) |
-| `enablePixelation` | `boolean` | `false` | Enable pixelation effect |
-| `pixelSize` | `number` | `6` | Pixel size (even numbers only) |
-| `className` | `string` | `''` | Custom CSS class |
-| `width` | `number` | `undefined` | Canvas width (auto if undefined) |
-| `height` | `number` | `undefined` | Canvas height (auto if undefined) |
+An interactive accordion-style image slider with smooth transitions and responsive design.
 
-#### Color Format
+```tsx
+<AccordionSlider
+  images={[
+    { src: 'image1.jpg', alt: 'Description 1' },
+    { src: 'image2.jpg', alt: 'Description 2' },
+    { src: 'image3.jpg', alt: 'Description 3' }
+  ]}
+/>
+```
 
-Colors support multiple formats with opacity:
-- Hex: `#RRGGBB` or `#RRGGBBAA`
-- RGB/RGBA: `rgba(255, 0, 0, 0.5)`
+---
 
 ## Development
 
-### Setup
+### View Components in Storybook
+
+To explore all components with interactive controls:
 
 ```bash
 npm install
 npm run storybook
 ```
 
-### Available Commands
+This will start Storybook on [http://localhost:6006](http://localhost:6006)
+
+### Available Scripts
 
 ```bash
 npm run dev              # Start Vite dev server
-npm run build            # Build library
-npm run storybook        # Start Storybook on port 6006
-npm run build-storybook  # Build static Storybook
+npm run build            # Build library for production
+npm run storybook        # Start Storybook development server
+npm run build-storybook  # Build static Storybook site
+npm run test-storybook   # Run Storybook tests
 ```
 
 ### Project Structure
 
 ```
 liminal/
+├── .storybook/           # Storybook configuration
+│   ├── assets/           # Images and static assets
+│   └── ...
 ├── src/
 │   ├── components/
-│   │   └── FusionBall/
-│   │       ├── FusionBall.tsx
-│   │       ├── FusionBall.css
-│   │       ├── FusionBall.stories.tsx
-│   │       └── index.ts
-│   └── index.ts
-├── dist/
-│   ├── liminal.js
-│   ├── liminal.umd.cjs
-│   ├── style.css
-│   └── index.d.ts
+│   │   ├── FusionBall/
+│   │   │   ├── FusionBall.tsx
+│   │   │   ├── FusionBall.module.scss
+│   │   │   ├── FusionBall.stories.tsx
+│   │   │   └── index.ts
+│   │   └── ...           # More components coming soon
+│   └── index.ts          # Main entry point
+├── dist/                 # Built files (generated)
 └── package.json
 ```
 
+---
+
 ## Browser Support
 
-- Modern browsers with WebGL 2.0 support
+- Modern browsers with **WebGL 2.0** support
 - Chrome, Firefox, Safari, Edge (latest versions)
+- Mobile browsers with WebGL support
+
+---
+
+## Feedback & Contributions
+
+I'm always looking to improve and learn! If you have:
+
+- **Security concerns** or vulnerability reports
+- **Performance optimization** suggestions
+- **Bug reports** or feature requests
+- **General feedback** on code quality or architecture
+
+Please feel free to:
+- Open an [issue on GitHub](https://github.com/The-Genium007/liminal/issues)
+- Submit a pull request
+- Reach out directly
+
+I'm here to learn and grow as a developer, and any constructive feedback is highly appreciated!
+
+---
 
 ## License
 
-MIT
+MIT © [The-Genium007](https://github.com/The-Genium007)
+
+---
 
 ## Dependencies
 
-- React 18+
-- [OGL](https://github.com/oframe/ogl) - WebGL library
+- **React** 18+
+- **TypeScript** 5+
+- **OGL** - Lightweight WebGL library
+- **SCSS** for styling
+
+---
+
+<p align="center">
+  Made with ❤️ by <a href="https://github.com/The-Genium007">The-Genium007</a>
+</p>

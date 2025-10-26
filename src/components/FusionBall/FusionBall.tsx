@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { Renderer, Program, Mesh, Triangle, Transform, Vec3, Camera } from 'ogl';
-import './FusionBall.css';
+import styles from './FusionBall.module.scss';
 
 export type FusionBallProps = {
   color?: string;
@@ -15,6 +15,7 @@ export type FusionBallProps = {
   cursorBallSize?: number;
   cursorBallColor?: string;
   invertColors?: boolean;
+  invertIntensity?: number;
   enablePixelation?: boolean;
   pixelSize?: number;
   className?: string;
@@ -22,23 +23,34 @@ export type FusionBallProps = {
   height?: number;
 };
 
+// ============================================================================
+// Color Parsing Utilities
+// ============================================================================
+
+const HEX_REGEX = /^#([0-9a-f]{6}|[0-9a-f]{8})$/i;
+const RGBA_REGEX = /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/;
+const COLOR_SCALE = 1 / 255;
+
 function parseColor(color: string): [number, number, number, number] {
   // Support hex format: #RRGGBB or #RRGGBBAA
   if (color.startsWith('#')) {
-    const c = color.replace('#', '');
-    const r = parseInt(c.substring(0, 2), 16) / 255;
-    const g = parseInt(c.substring(2, 4), 16) / 255;
-    const b = parseInt(c.substring(4, 6), 16) / 255;
-    const a = c.length === 8 ? parseInt(c.substring(6, 8), 16) / 255 : 1.0;
-    return [r, g, b, a];
+    const match = color.match(HEX_REGEX);
+    if (match) {
+      const hex = match[1];
+      const r = parseInt(hex.substring(0, 2), 16) * COLOR_SCALE;
+      const g = parseInt(hex.substring(2, 4), 16) * COLOR_SCALE;
+      const b = parseInt(hex.substring(4, 6), 16) * COLOR_SCALE;
+      const a = hex.length === 8 ? parseInt(hex.substring(6, 8), 16) * COLOR_SCALE : 1.0;
+      return [r, g, b, a];
+    }
   }
 
   // Support rgba format: rgba(r, g, b, a)
-  const rgbaMatch = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+  const rgbaMatch = color.match(RGBA_REGEX);
   if (rgbaMatch) {
-    const r = parseInt(rgbaMatch[1]) / 255;
-    const g = parseInt(rgbaMatch[2]) / 255;
-    const b = parseInt(rgbaMatch[3]) / 255;
+    const r = parseInt(rgbaMatch[1], 10) * COLOR_SCALE;
+    const g = parseInt(rgbaMatch[2], 10) * COLOR_SCALE;
+    const b = parseInt(rgbaMatch[3], 10) * COLOR_SCALE;
     const a = rgbaMatch[4] ? parseFloat(rgbaMatch[4]) : 1.0;
     return [r, g, b, a];
   }
@@ -47,35 +59,39 @@ function parseColor(color: string): [number, number, number, number] {
   return [1, 1, 1, 1];
 }
 
+// ============================================================================
+// Hash Functions for Procedural Generation
+// ============================================================================
+
+const HASH_CONSTANT = 33.33;
+
 function fract(x: number): number {
   return x - Math.floor(x);
 }
 
 function hash31(p: number): number[] {
-  let r = [p * 0.1031, p * 0.103, p * 0.0973].map(fract);
+  const r = [p * 0.1031, p * 0.103, p * 0.0973].map(fract);
   const r_yzx = [r[1], r[2], r[0]];
-  const dotVal = r[0] * (r_yzx[0] + 33.33) + r[1] * (r_yzx[1] + 33.33) + r[2] * (r_yzx[2] + 33.33);
-  for (let i = 0; i < 3; i++) {
-    r[i] = fract(r[i] + dotVal);
-  }
-  return r;
+  const dotVal = r[0] * (r_yzx[0] + HASH_CONSTANT) +
+                 r[1] * (r_yzx[1] + HASH_CONSTANT) +
+                 r[2] * (r_yzx[2] + HASH_CONSTANT);
+
+  return r.map(val => fract(val + dotVal));
 }
 
 function hash33(v: number[]): number[] {
-  let p = [v[0] * 0.1031, v[1] * 0.103, v[2] * 0.0973].map(fract);
+  const p = [v[0] * 0.1031, v[1] * 0.103, v[2] * 0.0973].map(fract);
   const p_yxz = [p[1], p[0], p[2]];
-  const dotVal = p[0] * (p_yxz[0] + 33.33) + p[1] * (p_yxz[1] + 33.33) + p[2] * (p_yxz[2] + 33.33);
-  for (let i = 0; i < 3; i++) {
-    p[i] = fract(p[i] + dotVal);
-  }
-  const p_xxy = [p[0], p[0], p[1]];
-  const p_yxx = [p[1], p[0], p[0]];
-  const p_zyx = [p[2], p[1], p[0]];
-  const result: number[] = [];
-  for (let i = 0; i < 3; i++) {
-    result[i] = fract((p_xxy[i] + p_yxx[i]) * p_zyx[i]);
-  }
-  return result;
+  const dotVal = p[0] * (p_yxz[0] + HASH_CONSTANT) +
+                 p[1] * (p_yxz[1] + HASH_CONSTANT) +
+                 p[2] * (p_yxz[2] + HASH_CONSTANT);
+
+  const p_processed = p.map(val => fract(val + dotVal));
+  const p_xxy = [p_processed[0], p_processed[0], p_processed[1]];
+  const p_yxx = [p_processed[1], p_processed[0], p_processed[0]];
+  const p_zyx = [p_processed[2], p_processed[1], p_processed[0]];
+
+  return p_xxy.map((val, i) => fract((val + p_yxx[i]) * p_zyx[i]));
 }
 
 const vertex = `#version 300 es
@@ -99,7 +115,6 @@ uniform int iBallCount;
 uniform float iCursorBallSize;
 uniform vec3 iFusionBalls[50];
 uniform float iClumpFactor;
-uniform bool invertColors;
 uniform bool enablePixelation;
 uniform float pixelSize;
 out vec4 outColor;
@@ -142,11 +157,16 @@ void main() {
         vec4 mainColor = mix(iColor, iSecondaryColor, alpha1 * 0.5);
         cFinal = mainColor * alpha1 + iCursorColor * alpha2;
     }
-    // Apply color inversion if enabled
-    vec3 finalColor = invertColors ? (vec3(1.0) - cFinal.rgb) : cFinal.rgb;
-    outColor = vec4(finalColor * f, cFinal.a * f);
+
+    // The inversion is handled by CSS mix-blend-mode: difference
+    // Just output the color normally
+    outColor = vec4(cFinal.rgb * f, cFinal.a * f);
 }
 `;
+
+// ============================================================================
+// Type Definitions
+// ============================================================================
 
 type BallParams = {
   st: number;
@@ -155,6 +175,28 @@ type BallParams = {
   toggle: number;
   radius: number;
 };
+
+// ============================================================================
+// Constants
+// ============================================================================
+
+const DPR = 1;
+const MAX_BALLS = 50;
+const TWO_PI = 2 * Math.PI;
+
+// Ball generation constants
+const BALL_GEN = {
+  DT_MIN: 0.1 * Math.PI,
+  DT_MAX: 0.4 * Math.PI,
+  BASE_SCALE_MIN: 5.0,
+  BASE_SCALE_MAX: 10.0,
+  RADIUS_MIN: 0.5,
+  RADIUS_MAX: 2.0,
+} as const;
+
+// ============================================================================
+// FusionBall Component
+// ============================================================================
 
 const FusionBall: React.FC<FusionBallProps> = ({
   color = '#ffffff',
@@ -177,13 +219,49 @@ const FusionBall: React.FC<FusionBallProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Memoize parsed colors to avoid re-parsing on every render
+  const parsedColors = useMemo(() => {
+    const [r1, g1, b1, a1] = parseColor(color);
+    const effectiveSecondaryColor = secondaryColor || color;
+    const [r2, g2, b2, a2] = parseColor(effectiveSecondaryColor);
+    const effectiveCursorColor = cursorBallColor || color;
+    const [r3, g3, b3, a3] = parseColor(effectiveCursorColor);
+
+    return {
+      primary: [r1, g1, b1, a1] as [number, number, number, number],
+      secondary: [r2, g2, b2, a2] as [number, number, number, number],
+      cursor: [r3, g3, b3, a3] as [number, number, number, number],
+    };
+  }, [color, secondaryColor, cursorBallColor]);
+
+  // Memoize ball parameters generation
+  const ballParams = useMemo(() => {
+    const effectiveBallCount = Math.min(ballCount, MAX_BALLS);
+    const params: BallParams[] = [];
+
+    for (let i = 0; i < effectiveBallCount; i++) {
+      const idx = i + 1;
+      const h1 = hash31(idx);
+      const st = h1[0] * TWO_PI;
+      const dtFactor = BALL_GEN.DT_MIN + h1[1] * (BALL_GEN.DT_MAX - BALL_GEN.DT_MIN);
+      const baseScale = BALL_GEN.BASE_SCALE_MIN + h1[1] * (BALL_GEN.BASE_SCALE_MAX - BALL_GEN.BASE_SCALE_MIN);
+      const h2 = hash33(h1);
+      const toggle = Math.floor(h2[0] * 2.0);
+      const radiusVal = (BALL_GEN.RADIUS_MIN + h2[2] * (BALL_GEN.RADIUS_MAX - BALL_GEN.RADIUS_MIN)) * ballSize;
+
+      params.push({ st, dtFactor, baseScale, toggle, radius: radiusVal });
+    }
+
+    return params;
+  }, [ballCount, ballSize]);
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const dpr = 1;
+    // Initialize WebGL renderer with optimized settings
     const renderer = new Renderer({
-      dpr,
+      dpr: DPR,
       alpha: true,
       premultipliedAlpha: false
     });
@@ -191,6 +269,7 @@ const FusionBall: React.FC<FusionBallProps> = ({
     gl.clearColor(0, 0, 0, 0);
     container.appendChild(gl.canvas);
 
+    // Setup orthographic camera
     const camera = new Camera(gl, {
       left: -1,
       right: 1,
@@ -202,21 +281,14 @@ const FusionBall: React.FC<FusionBallProps> = ({
     camera.position.z = 1;
 
     const geometry = new Triangle(gl);
-    const [r1, g1, b1, a1] = parseColor(color);
 
-    // Use color as fallback if secondaryColor is empty
-    const effectiveSecondaryColor = secondaryColor || color;
-    const [r2, g2, b2, a2] = parseColor(effectiveSecondaryColor);
+    // Pre-allocate fusion balls array
+    const fusionBallsUniform = Array.from(
+      { length: MAX_BALLS },
+      () => new Vec3(0, 0, 0)
+    );
 
-    // Use color as fallback if cursorBallColor is empty
-    const effectiveCursorColor = cursorBallColor || color;
-    const [r3, g3, b3, a3] = parseColor(effectiveCursorColor);
-
-    const fusionBallsUniform: Vec3[] = [];
-    for (let i = 0; i < 50; i++) {
-      fusionBallsUniform.push(new Vec3(0, 0, 0));
-    }
-
+    // Create shader program with uniforms
     const program = new Program(gl, {
       vertex,
       fragment,
@@ -224,15 +296,14 @@ const FusionBall: React.FC<FusionBallProps> = ({
         iTime: { value: 0 },
         iResolution: { value: new Vec3(0, 0, 0) },
         iMouse: { value: new Vec3(0, 0, 0) },
-        iColor: { value: [r1, g1, b1, a1] },
-        iSecondaryColor: { value: [r2, g2, b2, a2] },
-        iCursorColor: { value: [r3, g3, b3, a3] },
+        iColor: { value: parsedColors.primary },
+        iSecondaryColor: { value: parsedColors.secondary },
+        iCursorColor: { value: parsedColors.cursor },
         iAnimationSize: { value: animationSize },
         iBallCount: { value: ballCount },
         iCursorBallSize: { value: cursorBallSize },
         iFusionBalls: { value: fusionBallsUniform },
         iClumpFactor: { value: clumpFactor },
-        invertColors: { value: invertColors },
         enablePixelation: { value: enablePixelation },
         pixelSize: { value: pixelSize }
       }
@@ -242,65 +313,60 @@ const FusionBall: React.FC<FusionBallProps> = ({
     const scene = new Transform();
     mesh.setParent(scene);
 
-    const maxBalls = 50;
-    const effectiveBallCount = Math.min(ballCount, maxBalls);
-    const ballParams: BallParams[] = [];
-    for (let i = 0; i < effectiveBallCount; i++) {
-      const idx = i + 1;
-      const h1 = hash31(idx);
-      const st = h1[0] * (2 * Math.PI);
-      const dtFactor = 0.1 * Math.PI + h1[1] * (0.4 * Math.PI - 0.1 * Math.PI);
-      const baseScale = 5.0 + h1[1] * (10.0 - 5.0);
-      const h2 = hash33(h1);
-      const toggle = Math.floor(h2[0] * 2.0);
-      const radiusVal = (0.5 + h2[2] * (2.0 - 0.5)) * ballSize;
-      ballParams.push({ st, dtFactor, baseScale, toggle, radius: radiusVal });
-    }
-
+    // Mouse tracking state
     const mouseBallPos = { x: 0, y: 0 };
     let pointerInside = false;
     let pointerX = 0;
     let pointerY = 0;
 
-    function resize() {
+    // Resize handler
+    const resize = () => {
       if (!container) return;
       const canvasWidth = width || container.clientWidth;
       const canvasHeight = height || container.clientHeight;
-      renderer.setSize(canvasWidth * dpr, canvasHeight * dpr);
+      renderer.setSize(canvasWidth * DPR, canvasHeight * DPR);
       gl.canvas.style.width = `${canvasWidth}px`;
       gl.canvas.style.height = `${canvasHeight}px`;
       program.uniforms.iResolution.value.set(gl.canvas.width, gl.canvas.height, 0);
-    }
+    };
     window.addEventListener('resize', resize);
     resize();
 
-    function onPointerMove(e: PointerEvent) {
+    // Pointer event handlers
+    const onPointerMove = (e: PointerEvent) => {
       if (!enableMouseInteraction || !container) return;
       const rect = container.getBoundingClientRect();
       const px = e.clientX - rect.left;
       const py = e.clientY - rect.top;
       pointerX = (px / rect.width) * gl.canvas.width;
       pointerY = (1 - py / rect.height) * gl.canvas.height;
-    }
-    function onPointerEnter() {
+    };
+
+    const onPointerEnter = () => {
       if (!enableMouseInteraction) return;
       pointerInside = true;
-    }
-    function onPointerLeave() {
+    };
+
+    const onPointerLeave = () => {
       if (!enableMouseInteraction) return;
       pointerInside = false;
-    }
+    };
+
     container.addEventListener('pointermove', onPointerMove);
     container.addEventListener('pointerenter', onPointerEnter);
     container.addEventListener('pointerleave', onPointerLeave);
 
+    // Animation loop
     const startTime = performance.now();
+    const effectiveBallCount = ballParams.length;
     let animationFrameId: number;
-    function update(t: number) {
+
+    const update = (t: number) => {
       animationFrameId = requestAnimationFrame(update);
       const elapsed = (t - startTime) * 0.001;
       program.uniforms.iTime.value = elapsed;
 
+      // Update ball positions
       for (let i = 0; i < effectiveBallCount; i++) {
         const p = ballParams[i];
         const dt = elapsed * speed * p.dtFactor;
@@ -312,6 +378,7 @@ const FusionBall: React.FC<FusionBallProps> = ({
         fusionBallsUniform[i].set(posX, posY, p.radius);
       }
 
+      // Update mouse ball position
       let targetX: number, targetY: number;
       if (pointerInside) {
         targetX = pointerX;
@@ -329,43 +396,62 @@ const FusionBall: React.FC<FusionBallProps> = ({
       program.uniforms.iMouse.value.set(mouseBallPos.x, mouseBallPos.y, 0);
 
       renderer.render({ scene, camera });
-    }
+    };
+
     animationFrameId = requestAnimationFrame(update);
 
+    // Cleanup function
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', resize);
       container.removeEventListener('pointermove', onPointerMove);
       container.removeEventListener('pointerenter', onPointerEnter);
       container.removeEventListener('pointerleave', onPointerLeave);
-      container.removeChild(gl.canvas);
+      if (container.contains(gl.canvas)) {
+        container.removeChild(gl.canvas);
+      }
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
   }, [
-    color,
-    secondaryColor,
-    cursorBallColor,
+    parsedColors,
+    ballParams,
     speed,
     enableMouseInteraction,
     hoverSmoothness,
     animationSize,
     ballCount,
-    ballSize,
     clumpFactor,
     cursorBallSize,
-    invertColors,
     enablePixelation,
     pixelSize,
     width,
     height
   ]);
 
-  const containerStyle: React.CSSProperties = {
+  // Apply CSS blend mode for color inversion
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const canvas = container.querySelector('canvas');
+    if (canvas) {
+      canvas.style.mixBlendMode = invertColors ? 'difference' : '';
+    }
+  }, [invertColors]);
+
+  // Memoize container style
+  const containerStyle = useMemo<React.CSSProperties>(() => ({
     width: width ? `${width}px` : '100%',
     height: height ? `${height}px` : '100%',
-  };
+  }), [width, height]);
 
-  return <div ref={containerRef} className={`fusionball-container ${className}`} style={containerStyle} />;
+  // Combine class names
+  const containerClassName = useMemo(() =>
+    className ? `${styles.fusionballContainer} ${className}` : styles.fusionballContainer,
+    [className]
+  );
+
+  return <div ref={containerRef} className={containerClassName} style={containerStyle} />;
 };
 
 export default FusionBall;

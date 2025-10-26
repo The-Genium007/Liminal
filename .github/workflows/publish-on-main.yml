@@ -5,15 +5,17 @@
 # mergé dans la branche main.
 #
 # Prérequis:
-# - Secret NPM_TOKEN configuré dans GitHub (Automation token avec droit publish)
+# - Trusted Publishing (OIDC) configuré sur npmjs.com pour ce package
+#   → Aller sur: https://www.npmjs.com/package/liminal-ui-library/access
+#   → Configurer: GitHub Actions avec org "The-Genium007", repo "liminal-ui-library", workflow "publish-on-main.yml"
 # - package.json.version doit être incrémentée manuellement avant le merge
-# - package.json.repository doit pointer vers le bon repo GitHub (requis pour --provenance)
+# - package.json.repository doit pointer vers le bon repo GitHub
 #
 # Le workflow:
 # 1. Vérifie si la version existe déjà sur npm (skip si déjà publiée)
 # 2. Execute les tests si présents
 # 3. Build le projet
-# 4. Publie avec provenance sur npm
+# 4. Publie avec OIDC (Trusted Publishing) - provenance automatique
 # ============================================================================
 
 name: Publish to npm on push to main
@@ -108,18 +110,18 @@ jobs:
       # Publication npm avec provenance
       # ========================================================================
 
-      - name: 🚀 Publish to npm with provenance
+      - name: 🚀 Publish to npm with Trusted Publishing (OIDC)
         if: steps.check_version.outputs.should_publish == 'true'
         run: |
           echo "📤 Publishing ${{ steps.check_version.outputs.package_name }}@${{ steps.check_version.outputs.package_version }}"
 
-          # Note: Retirer --access public si le package n'est pas scopé ou n'est pas public
-          npm publish --provenance --access public
+          # Publication avec Trusted Publishing (OIDC)
+          # Le flag --provenance n'est pas nécessaire car provenance est automatique avec OIDC
+          # Pas besoin de NPM_TOKEN - l'authentification se fait via OIDC
+          npm publish --access public
 
-          echo "✅ Publication npm réussie avec provenance"
+          echo "✅ Publication npm réussie avec Trusted Publishing"
           echo "📦 Package disponible: https://www.npmjs.com/package/${{ steps.check_version.outputs.package_name }}/v/${{ steps.check_version.outputs.package_version }}"
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: ⏩ Skip publication (version already published)
         if: steps.check_version.outputs.should_publish == 'false'

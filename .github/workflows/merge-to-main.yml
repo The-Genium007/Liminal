@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Wait for CI workflow to complete
         uses: lewagon/wait-on-check-action@v1.3.4
@@ -52,7 +52,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -89,7 +89,7 @@ jobs:
     steps:
       # Checkout main branch (après le merge)
       - name: 📥 Checkout main branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: main
 
@@ -171,7 +171,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: 📥 Checkout main branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: main
 

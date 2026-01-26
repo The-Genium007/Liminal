@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Wait for CI workflow to complete
-        uses: lewagon/wait-on-check-action@v1.3.4
+        uses: lewagon/wait-on-check-action@v1.5.0
         with:
           ref: ${{ github.sha }}
           check-name: 'Lint and Type Check'
@@ -21,7 +21,7 @@ jobs:
           wait-interval: 10
 
       - name: Wait for Build to complete
-        uses: lewagon/wait-on-check-action@v1.3.4
+        uses: lewagon/wait-on-check-action@v1.5.0
         with:
           ref: ${{ github.sha }}
           check-name: 'Build Library'
@@ -29,7 +29,7 @@ jobs:
           wait-interval: 10
 
       - name: Wait for Storybook Build to complete
-        uses: lewagon/wait-on-check-action@v1.3.4
+        uses: lewagon/wait-on-check-action@v1.5.0
         with:
           ref: ${{ github.sha }}
           check-name: 'Build Storybook'
@@ -37,7 +37,7 @@ jobs:
           wait-interval: 10
 
       - name: Wait for Storybook Tests to complete
-        uses: lewagon/wait-on-check-action@v1.3.4
+        uses: lewagon/wait-on-check-action@v1.5.0
         with:
           ref: ${{ github.sha }}
           check-name: 'Test Storybook'
